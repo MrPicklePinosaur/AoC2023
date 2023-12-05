@@ -11,14 +11,11 @@ pub fn solA() !u32 {
         var buffer: [100]u8 = undefined;
         const line = (try file.reader().readUntilDelimiterOrEof(&buffer, '\n')) orelse break;
 
-        var front_char: ?u8 = null;
-        var back_char: ?u8 = null;
-
         var i: usize = 0;
         while (i < line.len) : (i += 1) {
             const ch = line[i];
             if ('0' <= ch and ch <= '9') {
-                front_char = ch - '0';
+                tot += 10 * (ch - '0');
                 break;
             }
         }
@@ -27,14 +24,10 @@ pub fn solA() !u32 {
         while (i <= line.len) : (i += 1) {
             const ch = line[line.len - i];
             if ('0' <= ch and ch <= '9') {
-                back_char = ch - '0';
+                tot += (ch - '0');
                 break;
             }
         }
-
-        if (front_char == null or back_char == null) continue;
-
-        tot += front_char.? * 10 + back_char.?;
     }
     return tot;
 }
@@ -74,14 +67,12 @@ pub fn solB() !u32 {
         const line = (try file.reader().readUntilDelimiterOrEof(&buffer, '\n')) orelse break;
         const line_len = line.len;
 
-        var val: u32 = 0;
-
         var i: usize = 0;
         left_outer: while (i < line_len) : (i += 1) {
             for (mapping_table) |mapping| {
                 if (std.mem.eql(u8, line[i..@min(i + mapping.str.len, line_len)], mapping.str)) {
                     // std.debug.print("found {s}\n", .{mapping.str});
-                    val += 10 * mapping.num;
+                    tot += 10 * mapping.num;
                     break :left_outer;
                 }
             }
@@ -92,12 +83,11 @@ pub fn solB() !u32 {
             for (mapping_table) |mapping| {
                 if (std.mem.eql(u8, line[line_len -| i -| mapping.str.len .. line_len - i], mapping.str)) {
                     // std.debug.print("found {s}\n", .{mapping.str});
-                    val += mapping.num;
+                    tot += mapping.num;
                     break :right_outer;
                 }
             }
         }
-        tot += val;
     }
 
     return tot;
