@@ -19,3 +19,9 @@ In part b, I also discovered that the sentinel value of a pointer or slice is
 also included in the type, which I found pretty neat. The saturating
 subtracting operator is also some nice sugar.
 
+## Day2
+
+Day 2 involved a bit of parsing. My solution for this just involved string
+splitting over and over again. I wonder how efficient this is? Perhaps a better
+approach would be to make a single pass across the line using an iterator and
+have a state machine to decide what we are parsing?
