@@ -6,4 +6,5 @@ pub fn main() !void {
     // std.debug.print("day1 solution A {d}\n", .{try day1.solA()});
     // std.debug.print("day1 solution B {d}\n", .{try day1.solB()});
     std.debug.print("day2 solution A {d}\n", .{try day2.solA()});
+    std.debug.print("day2 solution B {d}\n", .{try day2.solB()});
 }
