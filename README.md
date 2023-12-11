@@ -25,3 +25,13 @@ Day 2 involved a bit of parsing. My solution for this just involved string
 splitting over and over again. I wonder how efficient this is? Perhaps a better
 approach would be to make a single pass across the line using an iterator and
 have a state machine to decide what we are parsing?
+
+## Day3
+
+Day 3 in all honesty gave me quite a hard time. This was perhaps due to lack of
+understanding of the containers in the standard library, leading to perhaps
+some really bad code. I also struggled quite a lot with writing nice code using
+zig's loops, which behave slightly different to what you would expect from most
+other languages. I would like to revisit this question when I get a bit better
+at the language perhaps.
+
