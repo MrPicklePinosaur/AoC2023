@@ -35,3 +35,9 @@ zig's loops, which behave slightly different to what you would expect from most
 other languages. I would like to revisit this question when I get a bit better
 at the language perhaps.
 
+## Day4
+
+Pretty clean solution using hashmap to check for winning numbers. Second part
+of question was also a nice 1D DP solution. I did misunderstand the question
+and thought you win a copy of the card of the number that you matched, leading
+to an unnecessary topological sort implmenatation :P.

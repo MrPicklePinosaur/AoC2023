@@ -44,36 +44,8 @@ pub fn solA() !u32 {
     return tot;
 }
 
-fn top_sort(graph: std.ArrayList(std.ArrayList(u32)), allocator: mem.Allocator) !std.ArrayList(u32) {
-    const n = graph.items.len;
-
-    var out_stack = std.ArrayList(u32).init(allocator);
-    var visited: []bool = try allocator.alloc(bool, n);
-    @memset(visited, false);
-
-    var i: u32 = 0;
-    while (i < n) : (i += 1) {
-        if (visited[i] == false) {
-            try _top_sort(graph, visited, &out_stack, i);
-        }
-    }
-    return out_stack;
-}
-
-fn _top_sort(graph: std.ArrayList(std.ArrayList(u32)), visited: []bool, out_stack: *std.ArrayList(u32), i: u32) !void {
-    const edges = graph.items[i].items;
-
-    visited[i] = true;
-    for (edges) |edge| {
-        if (visited[edge -| 1] == false) {
-            try _top_sort(graph, visited, out_stack, edge -| 1);
-        }
-    }
-    try out_stack.append(i);
-}
-
 pub fn solB() !u32 {
-    const file = try std.fs.cwd().openFile("src/day4/input_small.txt", .{});
+    const file = try std.fs.cwd().openFile("src/day4/input.txt", .{});
     defer file.close();
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -84,7 +56,7 @@ pub fn solB() !u32 {
     defer winning_nums.deinit(); // TODO technically not necessary (since we use arena allocator)
 
     // TODO not best choice of data structure?
-    var games = std.ArrayList(std.ArrayList(u32)).init(allocator);
+    var games = std.ArrayList(u32).init(allocator);
 
     while (true) {
         var buffer: [256]u8 = undefined;
@@ -102,49 +74,36 @@ pub fn solB() !u32 {
             try winning_nums.put(try std.fmt.parseInt(u32, num, 10), {});
         }
 
-        var matched_nums = std.ArrayList(u32).init(allocator);
-
+        var winning: u32 = 0;
         while (my_nums_it.next()) |num| {
             const num_parsed = try std.fmt.parseInt(u32, num, 10);
             if (winning_nums.get(num_parsed) != null) {
-                try matched_nums.append(num_parsed);
+                winning += 1;
             }
         }
 
-        try games.append(matched_nums);
+        try games.append(winning);
     }
 
     const num_games = games.items.len;
-    print("num games {d}\n", .{num_games});
     var table: []u32 = try allocator.alloc(u32, num_games);
     @memset(table, 1);
 
-    for (games.items) |game| {
-        for (game.items) |winning_item| {
-            print("{d},", .{winning_item});
+    var i: usize = 0;
+    while (i < num_games) : (i += 1) {
+        const card_num = table[i];
+        const winning = games.items[i];
+        var j: u32 = 0;
+        while (j < winning) : (j += 1) {
+            table[i + 1 + j] += card_num;
         }
-        print("\n", .{});
     }
 
-    // const sorted = try top_sort(games, allocator);
+    var tot: u32 = 0;
+    i = 0;
+    while (i < num_games) : (i += 1) {
+        tot += table[i];
+    }
 
-    // for (sorted.items) |item| {
-    //     const card_num = table[item];
-    //     const winning = games.items[item].items;
-    //     print("[{d}] num {d}: ", .{ item, card_num });
-    //     for (winning) |winning_item| {
-    //         table[winning_item] += card_num;
-    //         print("{d},", .{winning_item});
-    //     }
-    //     print("\n", .{});
-    // }
-
-    // var tot: u32 = 0;
-    // var i: usize = 0;
-    // while (i < num_games) : (i += 1) {
-    //     tot += table[i];
-    // }
-
-    // return tot;
-    return 0;
+    return tot;
 }
