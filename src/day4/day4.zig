@@ -44,8 +44,36 @@ pub fn solA() !u32 {
     return tot;
 }
 
+fn top_sort(graph: std.ArrayList(std.ArrayList(u32)), allocator: mem.Allocator) !std.ArrayList(u32) {
+    const n = graph.items.len;
+
+    var out_stack = std.ArrayList(u32).init(allocator);
+    var visited: []bool = try allocator.alloc(bool, n);
+    @memset(visited, false);
+
+    var i: u32 = 0;
+    while (i < n) : (i += 1) {
+        if (visited[i] == false) {
+            try _top_sort(graph, visited, &out_stack, i);
+        }
+    }
+    return out_stack;
+}
+
+fn _top_sort(graph: std.ArrayList(std.ArrayList(u32)), visited: []bool, out_stack: *std.ArrayList(u32), i: u32) !void {
+    const edges = graph.items[i].items;
+
+    visited[i] = true;
+    for (edges) |edge| {
+        if (visited[edge -| 1] == false) {
+            try _top_sort(graph, visited, out_stack, edge -| 1);
+        }
+    }
+    try out_stack.append(i);
+}
+
 pub fn solB() !u32 {
-    const file = try std.fs.cwd().openFile("src/day4/input.txt", .{});
+    const file = try std.fs.cwd().openFile("src/day4/input_small.txt", .{});
     defer file.close();
 
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
@@ -58,7 +86,6 @@ pub fn solB() !u32 {
     // TODO not best choice of data structure?
     var games = std.ArrayList(std.ArrayList(u32)).init(allocator);
 
-    var tot: u32 = 0;
     while (true) {
         var buffer: [256]u8 = undefined;
         const line = (try file.reader().readUntilDelimiterOrEof(&buffer, '\n')) orelse break;
@@ -88,18 +115,36 @@ pub fn solB() !u32 {
     }
 
     const num_games = games.items.len;
+    print("num games {d}\n", .{num_games});
     var table: []u32 = try allocator.alloc(u32, num_games);
     @memset(table, 1);
 
-    // TODO i think need to do topological sort first
-
-    var i: usize = 0;
-    while (i < num_games) : (i += 1) {
-        print("===\n", .{});
-        for (games.items[i].items) |match| {
-            print("{d}\n", .{match});
+    for (games.items) |game| {
+        for (game.items) |winning_item| {
+            print("{d},", .{winning_item});
         }
+        print("\n", .{});
     }
 
-    return tot;
+    // const sorted = try top_sort(games, allocator);
+
+    // for (sorted.items) |item| {
+    //     const card_num = table[item];
+    //     const winning = games.items[item].items;
+    //     print("[{d}] num {d}: ", .{ item, card_num });
+    //     for (winning) |winning_item| {
+    //         table[winning_item] += card_num;
+    //         print("{d},", .{winning_item});
+    //     }
+    //     print("\n", .{});
+    // }
+
+    // var tot: u32 = 0;
+    // var i: usize = 0;
+    // while (i < num_games) : (i += 1) {
+    //     tot += table[i];
+    // }
+
+    // return tot;
+    return 0;
 }
