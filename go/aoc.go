@@ -7,5 +7,6 @@ import (
 )
 
 func main() {
-	fmt.Println(day5.SolA());
+	// fmt.Println(day5.SolA());
+	fmt.Println(day5.SolB());
 }
