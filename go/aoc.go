@@ -1,10 +1,11 @@
 package main
 
 import (
-	_ "fmt"
+	"fmt"
+
 	"github.com/MrPicklePinosaur/AoC2023/pkg"
 )
 
 func main() {
-	day5.SolA();
+	fmt.Println(day5.SolA());
 }

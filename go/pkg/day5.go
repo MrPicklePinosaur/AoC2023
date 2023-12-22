@@ -2,7 +2,6 @@ package day5
 
 import (
 	"bufio"
-	"fmt"
 	_ "fmt"
 	_ "io"
 	"log"
@@ -28,29 +27,9 @@ func (rangeMap *RangeMap) Conv(value int) int {
 	return value
 }
 
-func SolA() {
-	
-	file, err := os.Open("input/day5.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
-
-	scanner.Scan()
-	seedsStr := scanner.Text()
-	seedsStr = strings.TrimPrefix(seedsStr, "seeds: ")
-	seeds := strings.Split(seedsStr, " ")
-	_ = seeds
-
-	// new line
-	scanner.Scan()
-	_ = scanner.Text()
-
+func readRangeMap(scanner *bufio.Scanner) RangeMap {
 	// seed to soil map
-	var seedToSoil RangeMap
+	var rangeMap RangeMap
 
 	scanner.Scan()
 	_ = scanner.Text()
@@ -66,19 +45,59 @@ func SolA() {
 		sourceStart, _ := strconv.Atoi(ranges[1])
 		length, _      := strconv.Atoi(ranges[2])
 
-		fmt.Println(ranges)
+		// fmt.Println(ranges)
 
-		seedToSoil = append(seedToSoil, Range{
+		rangeMap = append(rangeMap, Range{
 			destStart:   destStart,
 			sourceStart: sourceStart,
 			length:      length,
 		})
 	}
+	return rangeMap
+}
 
+func SolA() int {
+	
+	file, err := os.Open("input/day5.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
 
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	scanner.Scan()
+	seedsStr := scanner.Text()
+	seedsStr = strings.TrimPrefix(seedsStr, "seeds: ")
+	var seeds []int
+	for _, seed := range strings.Split(seedsStr, " ") {
+		parsedSeed, _ := strconv.Atoi(seed)
+		seeds = append(seeds, parsedSeed)
+	}
+
+	// new line
+	scanner.Scan()
+	_ = scanner.Text()
+
+	var rangeMaps []RangeMap
+	for i := 0; i < 7; i++ {
+		rangeMaps = append(rangeMaps, readRangeMap(scanner))
+	}
+
+	ans := ^uint(0)
+	for _, seed := range seeds {
+		location := seed
+		for _, rangeMap := range rangeMaps {
+			location = rangeMap.Conv(location)
+		}
+		if uint(location) < ans {
+			ans = uint(location)
+		}
+	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-
+	return int(ans)
 }
