@@ -12,12 +12,21 @@ import (
 )
 
 type Range struct {
-	sourceStart int
 	destStart   int
+	sourceStart int
 	length      int
 }
 
 type RangeMap []Range
+
+func (rangeMap *RangeMap) Conv(value int) int {
+	for _, r := range *rangeMap {
+		if r.sourceStart <= value && value < r.sourceStart + r.length {
+			return r.destStart + (value - r.sourceStart)
+		}
+	}
+	return value
+}
 
 func SolA() {
 	
@@ -53,15 +62,15 @@ func SolA() {
 			break;
 		}
 		ranges := strings.SplitN(rangeLine, " ", 3)
-		sourceStart, _ := strconv.Atoi(ranges[0])
-		destStart, _   := strconv.Atoi(ranges[1])
+		destStart, _   := strconv.Atoi(ranges[0])
+		sourceStart, _ := strconv.Atoi(ranges[1])
 		length, _      := strconv.Atoi(ranges[2])
 
 		fmt.Println(ranges)
 
 		seedToSoil = append(seedToSoil, Range{
-			sourceStart: sourceStart,
 			destStart:   destStart,
+			sourceStart: sourceStart,
 			length:      length,
 		})
 	}
@@ -71,6 +80,5 @@ func SolA() {
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-
 
 }
